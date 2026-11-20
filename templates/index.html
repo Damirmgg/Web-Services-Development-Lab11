@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Мои задачи — Task Tracker</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <a class="brand" href="/"><span class="logo" aria-hidden="true">✓</span> Task Tracker</a>
+      <nav aria-label="Навигация"><a href="/" aria-current="page">Мои задачи</a><a href="/about">О проекте</a></nav>
+    </header>
+    <main>
+      <section class="panel" aria-labelledby="new-task">
+        <h1 id="new-task">Новая задача</h1>
+        {{if .Error}}<p class="error" role="alert">{{.Error}}</p>{{end}}
+        <form action="/tasks" method="post">
+          <label for="title">Название задачи</label>
+          <div class="add-row">
+            <input id="title" name="title" value="{{.Title}}" placeholder="Например, изучить net/http" required>
+            <button type="submit">+ Добавить</button>
+          </div>
+        </form>
+      </section>
+      <section aria-label="Статистика" class="stats">
+        <div><span>Всего задач</span><strong>{{.TotalTasks}}</strong></div>
+        <div><span>Выполнено</span><strong>{{.CompletedTasks}}</strong></div>
+        <div><span>Не выполнено</span><strong>{{.PendingTasks}}</strong></div>
+      </section>
+      <section class="panel" aria-labelledby="task-list">
+        <h2 id="task-list">Список задач</h2>
+        <ul class="tasks">
+          {{range .Tasks}}
+          <li class="task{{if .Completed}} completed{{end}}">
+            <div class="task-info">
+              <span class="task-id">#{{.ID}}</span>
+              <h3>{{.Title}}</h3>
+              <span class="status">{{if .Completed}}Выполнена{{else}}Не выполнена{{end}}</span>
+            </div>
+            <div class="actions">
+              <form action="/tasks/complete" method="post">
+                <input type="hidden" name="id" value="{{.ID}}">
+                <button class="secondary" type="submit" aria-label="{{if .Completed}}Вернуть в работу{{else}}Выполнить{{end}} задачу {{.ID}}">{{if .Completed}}Вернуть в работу{{else}}Выполнить{{end}}</button>
+              </form>
+              <form action="/tasks/delete" method="post">
+                <input type="hidden" name="id" value="{{.ID}}">
+                <button class="danger" type="submit" aria-label="Удалить задачу {{.ID}}">Удалить</button>
+              </form>
+            </div>
+          </li>
+          {{else}}
+          <li class="empty">Задач пока нет. Добавьте первую задачу с помощью формы выше.</li>
+          {{end}}
+        </ul>
+      </section>
+    </main>
+    <footer>Данные сохраняются до остановки приложения.</footer>
+  </div>
+</body>
+</html>
